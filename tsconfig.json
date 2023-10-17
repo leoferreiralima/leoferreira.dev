@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "baseUrl": "C:/Users/l.ferreira.lima/Documents/opensource/leoferreira",
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "src/*"
