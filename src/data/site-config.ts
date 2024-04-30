@@ -1,6 +1,9 @@
+import type { ImageMetadata } from 'astro';
+import heroImage from '../assets/hero.webp';
+
 export type Image = {
-    src: string;
-    alt?: string;
+    src: ImageMetadata;
+    alt: string;
     caption?: string;
 };
 
@@ -41,10 +44,6 @@ const siteConfig: SiteConfig = {
     title: 'Leonardo Ferreira',
     subtitle: 'Software Engineering Specialist',
     description: 'Leonardo Ferreira Blog e Portifólio',
-    image: {
-        src: '/dante-preview.jpg',
-        alt: 'Dante - Astro.js and Tailwind CSS theme'
-    },
     headerNavLinks: [
         {
             text: 'Home',
@@ -107,7 +106,7 @@ const siteConfig: SiteConfig = {
         title: 'Olá, Bem Vindo!',
         text: `Eu sou **Leonardo Ferreira**, um profissional de desenvolvimento de software com mais de 6 anos de experiência, especializado em soluções de E-commerce. Possuo habilidades em Java, NodeJs, Python e React, liderança em arquitetura de software, integração de sistemas e aprimoramento da qualidade de código. Minha carreira é marcada pela entrega de soluções eficientes e escaláveis, colaboração com clientes e uma forte capacidade de adaptação às novas tecnologias. Estou entusiasmado para explorar oportunidades de colaboração e contribuir para o sucesso de seus projetos.`,
         image: {
-            src: '/hero.webp',
+            src: heroImage,
             alt: 'Foto do Leonardo Ferreira'
         },
         actions: [

@@ -7,10 +7,12 @@ seo:
     src: '/about.webp'
     alt: Foto do Leonardo Ferreira
 ---
+import { Image } from 'astro:assets';
+import aboutImage from '../../assets/about.webp';
 
-<figure class="flex justify-center">
-    <img class="w-full lg:w-1/2 " src="/about.webp" loading="lazy" decoding="async" alt="Foto do Leonardo Ferreira" />
-</figure>
+<div class="flex justify-center bg-muted">
+  <Image src={aboutImage} alt="Foto do Leonardo Ferreira" class="my-0"/>
+</div>
 
 ## Leonardo Ferreira Lima
 

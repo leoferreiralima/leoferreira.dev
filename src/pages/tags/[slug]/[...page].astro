@@ -8,6 +8,8 @@ import siteConfig from '../../../data/site-config';
 import { getAllPosts, getAllTags, getPostsByTag } from '../../../services/blog';
 import EmptyList from '../../../components/EmptyList.astro';
 
+export const prerender = true;
+
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
     const posts = await getAllPosts();
     const tags = getAllTags(posts);
@@ -33,12 +35,7 @@ const currentTag = allTags.find((tag) => {
 });
 ---
 
-<BaseLayout
-    title={`Posts Tagged ${currentTag?.name}`}
-    description={`Veja a lista de posts sobre a tag ${currentTag?.name}`}
-    image={{ src: '/dante-preview.jpg', alt: 'The preview of the site' }}
-    showHeader={false}
->
+<BaseLayout title={`Posts Tagged ${currentTag?.name}`} description={`Veja a lista de posts sobre a tag ${currentTag?.name}`} showHeader={false}>
     <h1 class="mb-12 text-2xl leading-tight font-serif italic sm:mb-16 sm:text-4xl">Posts com a Tag "{currentTag?.name}"</h1>
     {
         blog?.length > 0 ? (

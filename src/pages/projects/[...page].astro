@@ -8,6 +8,8 @@ import siteConfig from '../../data/site-config';
 import { getAllProjects } from '../../services/projects';
 import EmptyList from '../../components/EmptyList.astro';
 
+export const prerender = true;
+
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
     const projects = await getAllProjects();
     return paginate(projects, { pageSize: siteConfig.projectsPerPage || 6 });
@@ -19,12 +21,7 @@ const { page } = Astro.props;
 const portfolio = page.data;
 ---
 
-<BaseLayout
-    title="Portfolio"
-    description="Explore um pouco do que eu já construi"
-    image={{ src: '/dante-preview.jpg', alt: 'The preview of the site' }}
-    showHeader={false}
->
+<BaseLayout title="Portfolio" description="Explore um pouco do que eu já construi" showHeader={false}>
     <h1 class="mb-12 text-2xl leading-tight font-serif italic sm:mb-16 sm:text-4xl">Projetos</h1>
     {
         portfolio?.length > 0 ? (

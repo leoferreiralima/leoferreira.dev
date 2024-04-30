@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import siteConfig from '../data/site-config';
 ---
 
@@ -6,7 +7,7 @@ import siteConfig from '../data/site-config';
     {
         siteConfig.logo && siteConfig.logo?.src ? (
             <a href="/">
-                <img src={siteConfig.logo.src} alt={siteConfig.logo.alt || ''} class="max-h-12" />
+                <Image src={siteConfig.logo.src} alt={siteConfig.logo.alt || ''} class="max-h-12" />
             </a>
         ) : (
             <a class="font-serif text-2xl leading-tight font-medium text-theme-foreground sm:text-4xl" href="/">

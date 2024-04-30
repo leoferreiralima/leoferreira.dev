@@ -8,6 +8,8 @@ import siteConfig from '../../data/site-config';
 import { getAllPosts } from '../../services/blog';
 import EmptyList from '../../components/EmptyList.astro';
 
+export const prerender = true;
+
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
     const posts = await getAllPosts();
     return paginate(posts, { pageSize: siteConfig.postsPerPage || 4 });
@@ -19,12 +21,7 @@ const { page } = Astro.props;
 const blog = page.data;
 ---
 
-<BaseLayout
-    title="Blog"
-    description="Um pequeno dump do meu cérebro, com insights, dicas e muito código"
-    image={{ src: '/dante-preview.jpg', alt: 'The preview of the site' }}
-    showHeader={false}
->
+<BaseLayout title="Blog" description="Um pequeno dump do meu cérebro, com insights, dicas e muito código" showHeader={false}>
     <h1 class="mb-12 text-2xl leading-tight font-serif italic sm:mb-16 sm:text-4xl">Posts</h1>
 
     {

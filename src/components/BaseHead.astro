@@ -3,11 +3,12 @@ import '../styles/fonts.css';
 import '../styles/global.css';
 
 import siteConfig from '../data/site-config';
+import type { ImageMetadata } from 'astro';
 
 export type Props = {
     title?: string;
     description?: string;
-    image?: { src: string; alt?: string };
+    image?: { src: ImageMetadata; alt?: string };
     pageType?: 'website' | 'article';
 };
 
@@ -15,7 +16,7 @@ const { description = '', image = siteConfig.image, pageType = 'website' } = Ast
 const title = [Astro.props.title, siteConfig.title].filter(Boolean).join(' | ');
 const resolvedImage = image?.src
     ? {
-          src: new URL(image.src, Astro.site).toString(),
+          src: new URL(image.src.src, Astro.site).toString(),
           alt: image.alt
       }
     : undefined;

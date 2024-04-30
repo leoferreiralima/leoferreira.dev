@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectPreview from '../../components/ProjectPreview.astro';
 import { getAllProjects } from '../../services/projects';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
     const projects = await getAllProjects();
     const projectCount = projects.length;
@@ -24,7 +26,7 @@ const { title, description, seo } = project.data;
 const { Content } = await project.render();
 ---
 
-<BaseLayout title={seo?.title ?? title} description={seo?.description ?? description} image={seo?.image} pageType="article" showHeader={false}>
+<BaseLayout title={seo?.title ?? title} description={seo?.description ?? description} pageType="article" showHeader={false}>
     <article class="mb-16 sm:mb-24">
         <header class="mb-8">
             <h1 class="text-3xl leading-tight font-serif font-medium sm:text-5xl sm:leading-tight">{title}</h1>
