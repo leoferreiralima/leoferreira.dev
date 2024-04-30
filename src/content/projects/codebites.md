@@ -18,9 +18,9 @@ Para consumir os posts utilizamos feeds RSS como base, sendo possível configura
 
 ## Objetivos
 
-1. Concetrar blogs de technologia em apenas um lugar
+1. Concentrar blogs de tecnologia em apenas um lugar
 2. Facilitar a descoberta de novos blogs e post relevantes
-3. Concetrar os bookmarks dos usuarios em um lugar apenas
+3. Concentrar os bookmarks dos usuarios em um lugar apenas
 
 ## Stack
 
@@ -38,8 +38,8 @@ Para consumir os posts utilizamos feeds RSS como base, sendo possível configura
 
 2. **Bookmarks**
 
-    Disponivel apenas para usuários logados
-    Permite o usuário guardar os posts que mais gostou para visulizar posteriomente
+    Disponível apenas para usuários logados
+    Permite guardar os posts mais interessantes para visulizar posteriomente
 
 3. **Lista Infinita de Posts**
 
