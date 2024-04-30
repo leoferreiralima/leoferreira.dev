@@ -1,0 +1,31 @@
+---
+import ArrowRight from '../icons/ArrowRight.astro';
+import type { PostTag } from '../services/blog';
+
+type Props = {
+    tag: PostTag;
+    class?: string;
+    headingLevel?: 'h2' | 'h3';
+};
+
+const { tag, class: className, headingLevel = 'h2' } = Astro.props;
+
+const TitleTag = headingLevel;
+---
+
+<a class:list={['mb-10 flex justify-between items-start gap-8 group sm:mb-12', className]} href={`/tags/${tag.slug}`}>
+    <div class="grow">
+        <TitleTag
+            class="text-xl leading-tight font-serif font-medium underline decoration-dashed underline-offset-4 decoration-1 sm:no-underline sm:group-hover:underline sm:text-2xl"
+        >
+            {tag.name}
+        </TitleTag>
+        <div class="mt-1 text-sm leading-normal">
+            {tag.posts.length}
+            {tag.posts.length === 1 ? 'post' : 'posts'}
+        </div>
+    </div>
+    <div class="hidden font-serif italic opacity-0 transition group-hover:opacity-100 sm:inline-flex sm:gap-1 sm:items-center sm:shrink-0">
+        Veja os Posts <ArrowRight class="fill-current w-4 h-4" />
+    </div>
+</a>
