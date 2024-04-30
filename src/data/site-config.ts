@@ -107,7 +107,7 @@ const siteConfig: SiteConfig = {
         title: 'Olá, Bem Vindo!',
         text: `Eu sou **Leonardo Ferreira**, um profissional de desenvolvimento de software com mais de 6 anos de experiência, especializado em soluções de E-commerce. Possuo habilidades em Java, NodeJs, Python e React, liderança em arquitetura de software, integração de sistemas e aprimoramento da qualidade de código. Minha carreira é marcada pela entrega de soluções eficientes e escaláveis, colaboração com clientes e uma forte capacidade de adaptação às novas tecnologias. Estou entusiasmado para explorar oportunidades de colaboração e contribuir para o sucesso de seus projetos.`,
         image: {
-            src: '/hero.jpg',
+            src: '/hero.webp',
             alt: 'Foto do Leonardo Ferreira'
         },
         actions: [

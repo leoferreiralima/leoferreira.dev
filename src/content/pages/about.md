@@ -4,12 +4,12 @@ seo:
   title: Sobre Mim
   description: Aprenda mais sobre o Leonardo Ferreira Lima.
   image:
-    src: '/about.jpg'
+    src: '/about.webp'
     alt: Foto do Leonardo Ferreira
 ---
 
 <figure class="flex justify-center">
-    <img class="w-full lg:w-1/2 " src="/about.jpg" loading="lazy" decoding="async" alt="Foto do Leonardo Ferreira" />
+    <img class="w-full lg:w-1/2 " src="/about.webp" loading="lazy" decoding="async" alt="Foto do Leonardo Ferreira" />
 </figure>
 
 ## Leonardo Ferreira Lima
