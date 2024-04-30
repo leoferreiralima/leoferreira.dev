@@ -20,6 +20,12 @@ dependencies:
   '@astrojs/tailwind':
     specifier: ^5.1.0
     version: 5.1.0(astro@4.7.0)(tailwindcss@3.4.3)
+  '@fontsource/inter':
+    specifier: ^5.0.18
+    version: 5.0.18
+  '@fontsource/newsreader':
+    specifier: ^5.0.18
+    version: 5.0.18
   astro:
     specifier: ^4.5.17
     version: 4.7.0(typescript@5.4.5)
@@ -677,6 +683,14 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /@fontsource/inter@5.0.18:
+    resolution: {integrity: sha512-YCsoYPTcs713sI7tLtxaPrIhXAXvEetGg5Ry02ivA8qUOb3fQHojbK/X9HLD5OOKvFUNR2Ynkwb1kR1hVKQHpw==}
+    dev: false
+
+  /@fontsource/newsreader@5.0.18:
+    resolution: {integrity: sha512-wcHs+bYW2ZNp4foOkSJ0R/zYC8LirhdwAhKwG20uNiSW75QZTgCdpCtcYHVB4uxC7BrsPiZnqMVsrxwatEwRRw==}
+    dev: false
 
   /@img/sharp-darwin-arm64@0.33.3:
     resolution: {integrity: sha512-FaNiGX1MrOuJ3hxuNzWgsT/mg5OHG/Izh59WW2mk1UwYHUwtfbhk5QNKYZgxf0pLOhx9ctGiGa2OykD71vOnSw==}
