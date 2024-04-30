@@ -15,3 +15,14 @@ export function slugify(input?: string) {
 
     return slug;
 }
+
+export async function getImageMetadata(path: string) {
+    const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.{jpeg,jpg,png,gif,webp}');
+
+    if (!images[path]) { 
+        throw new Error(`"${path}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif}"`); 
+    }
+
+    const image = await images[path]();
+    return image.default;
+}

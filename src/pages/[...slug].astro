@@ -24,15 +24,7 @@ const { Content } = await page.render();
 <BaseLayout
     title={seo?.title ?? title}
     description={seo?.description}
-    image={{
-        src: {
-            src: seo?.image?.src!,
-            format: 'webp',
-            height: 350,
-            width: 350
-        },
-        alt: seo?.image?.alt
-    }}
+    image={seo?.image}
     showHeader={false}
 >
     <article class="mb-16 sm:mb-24">
