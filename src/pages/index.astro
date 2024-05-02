@@ -8,9 +8,9 @@ import siteConfig from '../data/site-config';
 import { getAllPosts } from '../services/blog';
 import { getAllProjects } from '../services/projects';
 
-const posts = await getAllPosts();
+const posts = (await getAllPosts()).slice(0, 4);
 
-const projects = await getAllProjects();
+const projects = (await getAllProjects()).slice(0, 4);
 ---
 
 <BaseLayout description={siteConfig.description} image={siteConfig.image}>
