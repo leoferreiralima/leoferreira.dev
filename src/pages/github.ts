@@ -12,6 +12,7 @@ export const GET: APIRoute = async ({ request, locals, redirect }) => {
         event: 'social-redirect',
         distinctId,
         properties: {
+            social: 'github',
             utm_campaign: searchParams.get("utm_campaign"),
             utm_content: searchParams.get("utm_content"),
             utm_medium: searchParams.get("utm_medium"),
