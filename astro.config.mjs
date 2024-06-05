@@ -18,7 +18,7 @@ export default defineConfig({
     }),
     robotsTxt()
   ],
-  output: "hybrid",
+  output: "server",
   adapter: vercel({
     imageService: true
   })

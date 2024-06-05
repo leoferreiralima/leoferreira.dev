@@ -91,11 +91,11 @@ const siteConfig: SiteConfig = {
     socialLinks: [
         {
             text: 'Github',
-            href: 'https://github.com/leoferreiralima'
+            href: '/github?utm_source=site&utm_content=social-link&utm_campaign=github'
         },
         {
             text: 'Linkedin',
-            href: 'https://www.linkedin.com/in/leonardo-ferreira-lima/'
+            href: '/linkedin?utm_source=site&utm_content=social-link&utm_campaign=linkedin'
         },
         {
             text: 'E-mail',
@@ -112,7 +112,7 @@ const siteConfig: SiteConfig = {
         actions: [
             {
                 text: 'Entre em Contato',
-                href: 'https://www.linkedin.com/in/leonardo-ferreira-lima/'
+                href: '/linkedin?utm_source=site&utm_content=hero&utm_campaign=linkedin'
             }
         ]
     },
