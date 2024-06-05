@@ -21,5 +21,5 @@ export const GET: APIRoute = async ({ request, locals, redirect }) => {
         }
     });
 
-    return redirect("https://github.com/leoferreiralima");
+    return redirect("https://github.com/leoferreiralima", 308);
 }

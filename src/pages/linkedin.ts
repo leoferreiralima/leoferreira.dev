@@ -21,5 +21,5 @@ export const GET: APIRoute = async ({ request, locals, redirect }) => {
         }
     });
 
-    return redirect("https://www.linkedin.com/in/leonardo-ferreira-lima/");
+    return redirect("https://www.linkedin.com/in/leonardo-ferreira-lima/", 308);
 }

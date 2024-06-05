@@ -21,5 +21,5 @@ export const GET: APIRoute = async ({ request, locals, redirect }) => {
         }
     });
 
-    return redirect("https://wa.me/+5511963862748");
+    return redirect("https://wa.me/+5511963862748", 308);
 }
