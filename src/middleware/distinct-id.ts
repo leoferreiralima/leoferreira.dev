@@ -2,7 +2,7 @@ import type { APIContext, MiddlewareNext } from "astro";
 import { defineMiddleware } from "astro/middleware";
 import { v4 as uuidv4 } from 'uuid';
 
-export const distinctIdMiddleware = defineMiddleware((context: APIContext, next: MiddlewareNext) => {
+export const distinctIdMiddleware = defineMiddleware(async (context: APIContext, next: MiddlewareNext) => {
     let distinctId = context.cookies.get('distinct_id')?.value;
 
     if (!distinctId) {
@@ -16,5 +16,5 @@ export const distinctIdMiddleware = defineMiddleware((context: APIContext, next:
         path: '/'
     });
 
-    next();
+    return await next();
 });

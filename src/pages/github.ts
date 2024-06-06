@@ -1,9 +1,8 @@
 import type { APIRoute } from 'astro';
-import { posthogClient } from "../services/post-hog";
 
 export const GET: APIRoute = async ({ request, locals, redirect }) => {
     const distinctId = locals.distinctId;
-    const posthog = posthogClient(distinctId);
+    const posthog = locals.posthog;
 
     const url = new URL(request.url);
     const searchParams = url.searchParams;
