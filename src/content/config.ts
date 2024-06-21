@@ -19,8 +19,11 @@ const blog = defineCollection({
         z.object({
             title: z.string(),
             excerpt: z.string().optional(),
+            image: z.object({
+                src: context.image(),
+                alt: z.string()
+            }).optional(),
             publishDate: z.coerce.date(),
-            updatedDate: z.coerce.date().optional(),
             isFeatured: z.boolean().default(false),
             tags: z.array(z.string()).default([]),
             seo: seoSchema(context).optional()

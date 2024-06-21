@@ -19,10 +19,16 @@ export function slugify(input?: string) {
 export async function getImageMetadata(path: string) {
     const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*.{jpeg,jpg,png,gif,webp}');
 
-    if (!images[path]) { 
-        throw new Error(`"${path}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif}"`); 
+    if (!images[path]) {
+        throw new Error(`"${path}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif}"`);
     }
 
     const image = await images[path]();
     return image.default;
+}
+
+export function getReadTimeInMintues(text: string) {
+    const wpm = 200;
+    const wordsQuantity = text.split(/[^A-Za-z]+/).length;
+    return Math.ceil(wordsQuantity / wpm);
 }

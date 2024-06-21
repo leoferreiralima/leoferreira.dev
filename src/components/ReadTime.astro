@@ -1,0 +1,11 @@
+---
+import { getReadTimeInMintues } from '@/utils/common-utils';
+
+type Props = { text: string };
+
+const { text } = Astro.props;
+
+const readTimeInMintues = getReadTimeInMintues(text);
+---
+
+<span>{readTimeInMintues} min de Leitura</span>
