@@ -1,0 +1,443 @@
+---
+title: Testes de integração com Spring Boot e TestContainers
+excerpt: Descubra como simplificar e otimizar seus testes de integração utilizando Testcontainers, Spring Boot e MongoDB. Pare de enfrentar dificuldades e eleve seu ambiente de desenvolvimento ao próximo nível com essa poderosa combinação de ferramentas. Saiba mais!
+publishDate: '2024-06-25 12:00:00'
+isFeatured: true
+tags:
+  - Testcontainers
+  - SpringBoot
+  - MongoDB
+  - TestesDeIntegração
+  - DesenvolvimentoDeSoftware
+  - DevOps
+  - Java
+  - Docker
+  - AmbienteDeDesenvolvimento
+  - Programação
+  - QualidadeDeSoftware
+  - AutomaçãoDeTestes
+image:
+  src: '../../assets/posts/spring-boot-test-containers/hero.png'
+  alt: Spring Boot + Testcontainers
+---
+
+Nas minhas experiências com testes integrados, sempre enfrentei dificuldades em manter as dependências de testes, como bancos de dados, por exemplo.
+A alternativa era usar um banco in-memory, um servidor extra ou a minha própria máquina.
+
+O banco in-memory é simples e portátil, mas nem sempre adequado, pois não reproduz com precisão o comportamento do banco de dados real.
+Quando a aplicação necessita de funcionalidades específicas do banco de dados, o banco in-memory pode não suportar todas elas, prejudicando os testes.
+
+Já utilizar um banco de dados real, seja na sua máquina ou em um servidor, traz problemas de portabilidade e isolamento.
+Em um fluxo de CI/CD, todos os pipelines usariam o mesmo banco ou seria necessário configurar um banco para cada execução.
+Nesse cenário, poderíamos usar Docker para rodar o banco de dados de forma mais fácil, sem muitas configurações.
+
+É exatamente esse problema que a biblioteca Testcontainers resolve.
+Ela permite configurar, dentro dos testes da nossa aplicação, todas as dependências necessárias.
+O Testcontainers executa as dependências em containers Docker, eliminando a preocupação com configurações complexas.
+
+A biblioteca é compatível com diversas linguagens. Para saber mais, consulte a [documentação](https://testcontainers.com/getting-started).
+
+A seguir, mostrarei um exemplo de como configurar e utilizar o Testcontainers em um app Spring Boot com MongoDB.
+
+## Spring Boot + Testcontainers
+
+Para esse exemplo será construído uma app de cadastro de usuários, com as opções e criar e lista todos. O foco não será na funcionalidade das apis e sim nos testes.
+
+### 1. Requisitos
+
+- Java 17
+- Docker
+
+### 2. Criando o projeto
+
+Utilizando o start spring gere o projeto nesse
+[link](https://start.spring.io/#!type=gradle-project-kotlin&language=java&platformVersion=3.3.1&packaging=jar&jvmVersion=17&groupId=com.example&artifactId=test-containers&name=test-containers&description=Example%20o%20test%20containers&packageName=com.example.test-containers&dependencies=web,configuration-processor,devtools,data-mongodb,testcontainers)
+
+_Obs: O link já configura todos os pacotes, mas pode adicionar o que for necessário_
+
+Após baixar o projeto e decompactá-lo, abra o arquivo `build.gradle.kts` e adicione as seguintes dependências:
+
+```kotlin
+dependencies {
+    testImplementation("io.rest-assured:rest-assured") // para testar a API REST
+}
+```
+
+### 3. Criando as APIs
+
+#### 3.1 Persistência
+
+Primeiro crie a entidade `UserEntity` conforme abaixo:
+
+```java
+@Document("users")
+public class UserEntity {
+
+    @Id
+    private final String id;
+    private final String name;
+    private final String email;
+    private final String phone;
+
+    public UserEntity(String id, String name, String email, String phone) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    // getters
+}
+```
+
+Em seguida, crie o `UserRepository` conforme abaixo:
+
+```java
+@Repository
+public interface UserRepository extends MongoRepository<UserEntity, String> {
+}
+```
+
+#### 3.2 Service
+
+Na camada de service criaremo nosso domain object chamado `User` conforme abaixo:
+
+```java
+public record User(
+        String id,
+        String name,
+        String email,
+        String phone
+) {}
+```
+
+Dado que temos 2 classes diferentes para representar o User, precisaremos criar um mapper entre elas da seguinte maneira:
+
+```java
+// interface do mapper
+public interface EntityMapper<E,D> {
+    D toDomain(E entity);
+
+    E toEntity(D domain);
+
+    default List<D> toDomainList(List<E> entities) {
+        return Optional.ofNullable(entities)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(this::toDomain)
+                .toList();
+    }
+}
+```
+
+```java
+// implementação do mapper para o usuario
+@Component("userEntityMapper")
+public class UserEntityMapper implements EntityMapper<UserEntity, User> {
+
+    @Override
+    public User toDomain(UserEntity entity) {
+        return new User(
+                entity.getId(),
+                entity.getName(),
+                entity.getEmail(),
+                entity.getPhone()
+        );
+    }
+
+    @Override
+    public UserEntity toEntity(User domain) {
+        return new UserEntity(
+                domain.id(),
+                domain.name(),
+                domain.email(),
+                domain.phone()
+        );
+    }
+}
+```
+
+Logo após criaremos nosso service em conjunto com a sua interface:
+
+```java
+public interface UserService {
+    User createUser(User newUser);
+
+    List<User> getAll();
+}
+
+```
+
+```java
+@Service
+public class DefaultUserService implements UserService {
+    private final UserRepository userRepository;
+    private final EntityMapper<UserEntity, User> userEntityMapper;
+
+    public DefaultUserService(
+            UserRepository userRepository,
+            @Qualifier("userEntityMapper")
+            EntityMapper<UserEntity, User> userEntityMapper
+    ) {
+        this.userRepository = userRepository;
+        this.userEntityMapper = userEntityMapper;
+    }
+
+    @Override
+    public User createUser(User newUser) {
+        UserEntity userEntity = userRepository.save(
+                userEntityMapper.toEntity(newUser)
+        );
+
+        return userEntityMapper.toDomain(userEntity);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userEntityMapper.toDomainList(
+                userRepository.findAll()
+        );
+    }
+}
+```
+
+#### 3.3 Controller
+
+No fim na camada de controller, precisaremos de DTOs (Data Transfer Objects) para representar os dados que serão recebidos e enviados pela API REST.
+Para isso, criaremos 3 records conforme abaixo:
+
+```java
+public record CreateUserRequestDTO(
+        String name,
+        String email,
+        String phone
+) {}
+```
+
+```java
+public record UserResponseDTO(
+        String id,
+        String name,
+        String email,
+        String phone
+) {}
+```
+
+```java
+public record UserResponseListDTO(
+        List<UserResponseDTO> users
+) {}
+```
+
+Nesse caso também precisaremos de um mapper para transformar os DTOs em nossos domain objects:
+
+```java
+// interface do mapper para request DTO -> Domain
+public interface RequestDTOMapper<R, D> {
+    D toDomain(R requestDTO);
+}
+```
+
+```java
+// implementação do mapper para a criação de usuário
+@Component("createUserRequestDTOMapper")
+public class CreateUserRequestDTOMapper implements RequestDTOMapper<CreateUserRequestDTO, User> {
+    @Override
+    public User toDomain(CreateUserRequestDTO requestDTO) {
+        return new User(
+                null,
+                requestDTO.name(),
+                requestDTO.email(),
+                requestDTO.phone()
+        );
+    }
+}
+```
+
+```java
+// interface do mapper para response Domain -> DTO
+public interface ResponseDTOMapper<R, D> {
+    R toResponse(D domain);
+
+    default List<R> toResponseList(List<D> domains) {
+        return Optional.ofNullable(domains)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+}
+```
+
+```java
+// implementação do mapper para o reponse de usuário
+@Component("userResponseDTOMapper")
+public class UserResponseDTOMapper implements ResponseDTOMapper<UserResponseDTO, User> {
+
+    @Override
+    public UserResponseDTO toResponse(User domain) {
+        return new UserResponseDTO(
+                domain.id(),
+                domain.name(),
+                domain.email(),
+                domain.phone()
+        );
+    }
+}
+```
+
+Dado tudo isso criaremos o nosso controller conforme abaixo:
+
+```java
+@RestController
+@RequestMapping("/v1/users")
+public class UserController {
+    private final UserService userService;
+    private final ResponseDTOMapper<UserResponseDTO, User> userResponseDTOMapper;
+    private final RequestDTOMapper<CreateUserRequestDTO, User> createUserRequestDTOMapper;
+
+    public UserController(
+            UserService userService,
+            @Qualifier("userResponseDTOMapper")
+            ResponseDTOMapper<UserResponseDTO, User> userResponseDTOMapper,
+            @Qualifier("createUserRequestDTOMapper")
+            RequestDTOMapper<CreateUserRequestDTO, User> createUserRequestDTOMapper
+    ) {
+        this.userService = userService;
+        this.userResponseDTOMapper = userResponseDTOMapper;
+        this.createUserRequestDTOMapper = createUserRequestDTOMapper;
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponseDTO createUser(@RequestBody CreateUserRequestDTO createUserRequestDTO) {
+        User newUser = userService.createUser(
+                createUserRequestDTOMapper.toDomain(
+                        createUserRequestDTO
+                )
+        );
+
+        return userResponseDTOMapper.toResponse(newUser);
+    }
+
+    @GetMapping
+    public UserResponseListDTO getAll() {
+        return new UserResponseListDTO(
+                userResponseDTOMapper.toResponseList(
+                        userService.getAll()
+                )
+        );
+    }
+}
+```
+
+### 4. Testes
+
+Se o seu projeto foi gerado com o start spring,
+você já tem a configuração do testcontainer pronta para uso na classe `TestcontainersConfiguration`
+Essa classe configura um container docker na versão latest para rodar junto com o seus testes.
+
+```java
+@TestConfiguration(proxyBeanMethods = false)
+public class TestcontainersConfiguration {
+
+	@Bean
+	@ServiceConnection
+	MongoDBContainer mongoDbContainer() {
+		return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
+	}
+
+}
+```
+
+Pós isso basta gerarmos a nossa classe de testes e adicionarmos os testes que desejamos conforme abaixo:
+
+```java
+@Import(TestcontainersConfiguration.class)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+class UserControllerTest {
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeEach
+    void setup() {
+        RestAssured.port = port;
+
+        userRepository.deleteAll();
+    }
+
+    @Test
+    void shouldCreateUser() {
+        CreateUserRequestDTO createUserRequest = new CreateUserRequestDTO(
+                "Leonardo Ferreira",
+                "leonardo@leoferreira.dev",
+                "(11) 9 9999-9999"
+        );
+
+        given().contentType(ContentType.JSON)
+                .body(createUserRequest)
+                .when()
+                .post("/v1/users")
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue())
+                .body("name", equalTo("Leonardo Ferreira"))
+                .body("email", equalTo("leonardo@leoferreira.dev"))
+                .body("phone", equalTo("(11) 9 9999-9999"));
+    }
+
+    @Test
+    void shouldGetAll() {
+        userRepository.saveAll(
+                List.of(
+                        new UserEntity("id1", "name1", "email1@test.org", "(11) 9 9999-9999"),
+                        new UserEntity("id2", "name2", "email2@test.org", "(11) 9 9999-9999")
+                )
+        );
+
+        given().when()
+                .when()
+                .get("/v1/users")
+                .then()
+                .statusCode(200)
+                .body("users", hasSize(2))
+                .body("users[0].id", equalTo("id1"))
+                .body("users[0].name", equalTo("name1"))
+                .body("users[0].email", equalTo("email1@test.org"))
+                .body("users[0].phone", equalTo("(11) 9 9999-9999"))
+                .body("users[1].id", equalTo("id2"))
+                .body("users[1].name", equalTo("name2"))
+                .body("users[1].email", equalTo("email2@test.org"))
+                .body("users[1].phone", equalTo("(11) 9 9999-9999"));
+    }
+}
+```
+
+Também é possivel subir o servidor com testcontainer ativo para desenvolvimento rodando
+o comando `.\gradlew bootTestRun` ou usando diretamenta a sua IDE para executar o arquivo abaixo:
+
+```java
+public class TestExampleUseOfTestContainersApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.from(TestContainersExampleApplication::main)
+				.with(TestcontainersConfiguration.class)
+				.run(args);
+	}
+
+}
+```
+
+## Conclusão
+
+Com isso concluimos um overview rápido de como usar Testcontainers em uma aplicação Spring Boot.
+
+Você pode baixar o código fonte desse exemplo no link: https://github.com/leoferreiralima/testcontainers-example
+
+Não deixe de conferir a documentação e blog oficial do [Testcontainers](https://testcontainers.com/getting-started)
+
+Caso tenha alguma dúvida, não hesite em deixar um comentário abaixo.
